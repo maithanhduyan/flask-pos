@@ -1,0 +1,59 @@
+from flask import Flask, jsonify, render_template, request
+from pos.item import Item
+import sqlite3
+
+app = Flask(__name__, static_folder='static')
+
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+
+@app.route('/api/items', methods=['GET'])
+def get_items():
+    # Lấy danh sách item từ cơ sở dữ liệu
+    items = Item.get_all()
+    # Chuyển đổi danh sách item từ tuple sang một danh sách các đối tượng dict
+    items_list = []
+    for item in items:
+        item_dict = {'id': item[0], 'name': item[1], 'price': item[2]}
+        items_list.append(item_dict)
+
+    # Chuyển đổi danh sách item thành định dạng JSON và trả về response
+    return jsonify(items_list)
+
+
+@app.route('/api/search', methods=['GET','POST'])
+def search_item():
+    data = request.get_json()
+    name = data['name']
+
+    conn = sqlite3.connect('pos.db')
+    c = conn.cursor()
+
+    c.execute("SELECT * FROM Item WHERE name LIKE ?", ('%{}%'.format(name),))
+    items = c.fetchall()
+
+    conn.close()
+
+    items_list = []
+    for item in items:
+        item_dict = {'id': item[0], 'name': item[1], 'price': item[2]}
+        items_list.append(item_dict)
+
+    return jsonify(items_list)
+
+
+@app.route('/api/users')
+def get_users():
+    users = [
+        {'id': 1, 'name': 'John'},
+        {'id': 2, 'name': 'Jane'},
+        {'id': 3, 'name': 'Bob'}
+    ]
+    return jsonify(users)
+
+
+if __name__ == '__main__':
+    app.run()

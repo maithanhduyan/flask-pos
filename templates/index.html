@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>POS System</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+</head>
+
+<body>
+    <h1>Welcome to POS System</h1>
+    <form id="search-form">
+        <label>Tên item:</label>
+        <input type="text" name="name"/>
+        <button type="submit">Tìm kiếm</button>
+    </form>
+
+    <table id="item-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tên item</th>
+                <th>Giá</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+</body>
+
+</html>
