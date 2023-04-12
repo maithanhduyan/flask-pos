@@ -1,3 +1,4 @@
+import math
 from flask import Flask, jsonify, render_template, request
 from pos.item import Item
 import sqlite3
@@ -24,7 +25,7 @@ def get_items():
     return jsonify(items_list)
 
 
-@app.route('/api/search', methods=['GET','POST'])
+@app.route('/api/search', methods=['GET', 'POST'])
 def search_item():
     data = request.get_json()
     name = data['name']
@@ -45,12 +46,49 @@ def search_item():
     return jsonify(items_list)
 
 
+@app.route('/api/items2', methods=['GET','POST'])
+def get_items2():
+    page = int(request.args.get('page', 1))
+    per_page = int(request.args.get('per_page', 10))
+    keyword = request.args.get('keyword', '')
+
+    conn = sqlite3.connect('pos.db')
+    c = conn.cursor()
+
+    c.execute("SELECT COUNT(*) FROM Item WHERE name LIKE ?", ('%' + keyword + '%',))
+    total_items = c.fetchone()[0]
+    
+    total_pages = math.ceil(total_items / per_page)
+
+    offset = (page - 1) * per_page
+    c.execute("SELECT * FROM Item WHERE name LIKE ? LIMIT ? OFFSET ?", ('%' + keyword + '%', per_page, offset))
+    items = c.fetchall()
+
+    conn.close()
+
+    # convert items to json
+    items_list = []
+    for item in items:
+        item_dict = {'id': item[0], 'name': item[1], 'price': item[2]}
+        items_list.append(item_dict)
+
+    response = {
+        'items': items_list,
+        'total_pages': total_pages,
+        'total_items': total_items,
+        'current_page': page,
+        'per_page': per_page
+    }
+
+    return jsonify(response)
+
+
 @app.route('/api/users')
 def get_users():
     users = [
-        {'id': 1, 'name': 'John'},
-        {'id': 2, 'name': 'Jane'},
-        {'id': 3, 'name': 'Bob'}
+        {'id': 1, 'name': 'John', 'email': 'admin@example.com', 'password': 'admin'},
+        {'id': 2, 'name': 'Jane', 'email': 'admin1@example.com', 'password': 'admin1'},
+        {'id': 3, 'name': 'Bob', 'email': 'admin2@example.com', 'password': 'admin2'}
     ]
     return jsonify(users)
 

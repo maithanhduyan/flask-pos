@@ -57,10 +57,6 @@ def create_tables():
     c.execute(ORDER_UUID_IDX)
     c.execute(ITEM_UUID_IDX)
 
-    # Thêm dữ liệu vào bảng Item
-    # for i in range(10000):
-    #     c.execute("INSERT INTO Item (uuid, name, price) VALUES (?,?,?)", (str(uuid.uuid4()), ''.join(random.choice(string.ascii_uppercase) for _ in range(8)), random.randint(100, 99999)))
-
     conn.commit()
     conn.close()
 
