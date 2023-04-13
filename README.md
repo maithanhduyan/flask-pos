@@ -12,7 +12,14 @@ Add venv package to requirements.txt
 >pip freeze > requirements.txt
 
 Run Server
->flask --app shop run flask --app shop --debug run
+>flask run 
+>flask --debug run
 
 Add packages into requirements.txt
 >pip freeze > requirements.txt
+
+>pip install gunicorn
+pip uninstall gunicorn
+pip install gunicorn
+pip install flask-cors
+
